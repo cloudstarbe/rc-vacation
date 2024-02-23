@@ -119,8 +119,25 @@ class vacation extends rcube_plugin
 		if ($this->rc->config->get('vacation_gui_vacationdate', false))
 		{
 			$format = $this->rc->config->get('vacation_dateformat', 'm/d/Y');
-			$this->add_date_field($table, 'vacationstart', $this->obj->get_vacation_start(), $format);
-			$this->add_date_field($table, 'vacationend', $this->obj->get_vacation_end(), $format);
+
+			$vacation_start = strtotime($this->obj->get_vacation_start());
+			if (is_numeric($this->obj->get_vacation_start()))
+			{
+				$vacation_start = $this->obj->get_vacation_start();
+			} elseif (empty($this->obj->get_vacation_start())) {
+				$vacation_start = strtotime("now");
+			}
+
+			$vacation_end = strtotime($this->obj->get_vacation_end());
+			if (is_numeric($this->obj->get_vacation_end()))
+			{
+				$vacation_end = $this->obj->get_vacation_end();
+			} elseif (empty($this->obj->get_vacation_end())) {
+				$vacation_end = strtotime("+1 week");
+			}
+
+			$this->add_date_field($table, 'vacationstart', $vacation_start, $format);
+			$this->add_date_field($table, 'vacationend', $vacation_end, $format);
 		}
 
 		if ($this->rc->config->get('vacation_gui_vacationsubject', false))
@@ -511,7 +528,7 @@ class vacation extends rcube_plugin
 			}
 			else
 			{
-				$this->obj->set_vacation_end($data['vacation_start']);
+				$this->obj->set_vacation_start($data['vacation_start']);
 			}
 		}
 
