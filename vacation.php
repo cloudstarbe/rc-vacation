@@ -31,6 +31,7 @@ class vacation extends rcube_plugin
 		$this->add_texts('localization/', true);
 
 		$this->rc->output->add_label('vacation');
+                $this->add_hook("settings_actions", [$this, "hook_settings_actions"]);
 		$this->register_action('plugin.vacation', array($this, 'vacation_init'));
 		$this->register_action('plugin.vacation-save', array($this, 'vacation_save'));
 		$this->include_script('vacation.js');
@@ -48,6 +49,24 @@ class vacation extends rcube_plugin
 		require_once ($this->home . '/lib/rcube_vacation.php');
 		$this->obj = new rcube_vacation();
 	}
+
+        /*
+         * @param array $arg
+         * @return array
+         */
+        public function hook_settings_actions(array $arg): array
+        {
+                // add the vacation menu item to the settings sidebar
+                $arg['actions'][] = [
+                        'domain' => 'vacation',
+                        'class' => 'vacation',
+                        'action' => 'plugin.vacation',
+                        'title' => 'vacation',
+                        'label' => 'vacation',
+		];
+
+                return $arg;
+        }
 
 	/*
 	 * Plugin initialization function.
