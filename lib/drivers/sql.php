@@ -38,7 +38,7 @@ function vacation_read(array &$data)
 		}
 		else
 		{
-			$db = rcube_db::factory($dsn, '', false);
+			$db = rcube_db::factory(parse_dsn($dsn), '', false);
 		}
 		$db->set_debug((bool)$rcmail->config->get('sql_debug'));
 		$db->db_connect('w');
