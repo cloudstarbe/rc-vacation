@@ -176,7 +176,7 @@ function vacation_write(array &$data)
 		}
 		else
 		{
-			$db = rcube_db::factory($dsn, '', false);
+			$db = rcube_db::factory(parse_dsn($dsn), '', false);
 		}
 		$db->set_debug((bool)$rcmail->config->get('sql_debug'));
 		$db->db_connect('w');
@@ -227,4 +227,27 @@ function vacation_write(array &$data)
 	}
 
 	return PLUGIN_SUCCESS;
+}
+
+/*
+ * Parse DSN string and replace host variables
+ *
+ * @param string $dsn DSN string
+ *
+ * @return string DSN string
+ */
+function parse_dsn($dsn)
+{
+	if (strpos($dsn, '%')) {
+		// parse DSN and replace variables in hostname
+		$parsed = rcube_db::parse_dsn($dsn);
+		$host   = rcube_utils::parse_host($parsed['hostspec']);
+
+		// build back the DSN string
+		if ($host != $parsed['hostspec']) {
+			$dsn = str_replace('@' . $parsed['hostspec'], '@' . $host, $dsn);
+		}
+	}
+
+	return $dsn;
 }
